@@ -10,6 +10,7 @@ import android.view.View;
 public class CameraActivity extends AppCompatActivity {
 
     public static final String TAG = CameraActivity.class.getSimpleName();
+    public static final String ARG_OVERLAY_DRAWABLE_NAME = CameraFragment.ARG_OVERLAY_DRAWABLE_NAME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +23,15 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.squarecamera__activity_camera);
 
         if (savedInstanceState == null) {
+            CameraFragment fragment = (CameraFragment) CameraFragment.newInstance();
+            Bundle bundle = new Bundle();
+            String overlayFromIntent = getIntent().getStringExtra(ARG_OVERLAY_DRAWABLE_NAME);
+            bundle.putString(CameraFragment.ARG_OVERLAY_DRAWABLE_NAME, overlayFromIntent);
+            fragment.setArguments(bundle);
+
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, CameraFragment.newInstance(), CameraFragment.TAG)
+                    .replace(R.id.fragment_container, fragment, CameraFragment.TAG)
                     .commit();
         }
     }

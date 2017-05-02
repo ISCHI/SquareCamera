@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void launch() {
         Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+        startCustomCameraIntent.putExtra(CameraActivity.ARG_OVERLAY_DRAWABLE_NAME, "heart1");
         startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
     }
 

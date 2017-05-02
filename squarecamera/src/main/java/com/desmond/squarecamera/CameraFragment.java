@@ -27,6 +27,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.desmond.squarecamera.helper.CustomSquareImageView;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -36,6 +38,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     public static final String CAMERA_ID_KEY = "camera_id";
     public static final String CAMERA_FLASH_KEY = "flash_mode";
     public static final String IMAGE_INFO = "image_info";
+    public static final String ARG_OVERLAY_DRAWABLE_NAME = "overlayDrawableName";
 
     private static final int PICTURE_SIZE_MAX_WIDTH = 1280;
     private static final int PREVIEW_SIZE_MAX_WIDTH = 640;
@@ -54,6 +57,16 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
 
     public static Fragment newInstance() {
         return new CameraFragment();
+    }
+
+    public static Fragment newInstance(String overlayDrawableName) {
+        CameraFragment fragment = new CameraFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ARG_OVERLAY_DRAWABLE_NAME, overlayDrawableName);
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     public CameraFragment() {}
@@ -91,6 +104,15 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mOrientationListener.enable();
+
+        final CustomSquareImageView overlayImageView = (CustomSquareImageView) view.findViewById(R.id.camera_preview_overlay);
+        String overlayDrawableName = getArguments().getString(ARG_OVERLAY_DRAWABLE_NAME, null);
+        if (overlayDrawableName != null) {
+            int resId = getResources().getIdentifier(overlayDrawableName, "drawable", getActivity().getPackageName());
+            overlayImageView.setImageResource(resId);
+        } else {
+            overlayImageView.setImageBitmap(null);
+        }
 
         mPreviewView = (SquareCameraPreview) view.findViewById(R.id.camera_preview_view);
         mPreviewView.getHolder().addCallback(CameraFragment.this);
@@ -493,11 +515,12 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         int rotation = getPhotoRotation();
 //        Log.d(TAG, "normal orientation: " + orientation);
 //        Log.d(TAG, "Rotate Picture by: " + rotation);
+        String overlayDrawableName = getArguments().getString(ARG_OVERLAY_DRAWABLE_NAME, null);
         getFragmentManager()
                 .beginTransaction()
                 .replace(
                         R.id.fragment_container,
-                        EditSavePhotoFragment.newInstance(data, rotation, mImageParameters.createCopy()),
+                        EditSavePhotoFragment.newInstance(data, rotation, mImageParameters.createCopy(), overlayDrawableName),
                         EditSavePhotoFragment.TAG)
                 .addToBackStack(null)
                 .commit();

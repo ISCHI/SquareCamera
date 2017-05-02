@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.desmond.squarecamera.helper.CustomSquareImageView;
+
 
 /**
  *
@@ -28,17 +30,19 @@ public class EditSavePhotoFragment extends Fragment {
     public static final String BITMAP_KEY = "bitmap_byte_array";
     public static final String ROTATION_KEY = "rotation";
     public static final String IMAGE_INFO = "image_info";
+    public static final String ARG_OVERLAY_DRAWABLE_NAME = "overlayDrawableName";
 
     private static final int REQUEST_STORAGE = 1;
 
     public static Fragment newInstance(byte[] bitmapByteArray, int rotation,
-                                       @NonNull ImageParameters parameters) {
+                                       @NonNull ImageParameters parameters, String overlayDrawableName) {
         Fragment fragment = new EditSavePhotoFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(BITMAP_KEY, bitmapByteArray);
         args.putInt(ROTATION_KEY, rotation);
         args.putParcelable(IMAGE_INFO, parameters);
+        args.putString(ARG_OVERLAY_DRAWABLE_NAME, overlayDrawableName);
 
         fragment.setArguments(args);
         return fragment;
@@ -55,6 +59,15 @@ public class EditSavePhotoFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final CustomSquareImageView overlayImageView = (CustomSquareImageView) view.findViewById(R.id.camera_preview_overlay);
+        String overlayDrawableName = getArguments().getString(ARG_OVERLAY_DRAWABLE_NAME, null);
+        if (overlayDrawableName != null) {
+            int resId = getResources().getIdentifier(overlayDrawableName, "drawable", getActivity().getPackageName());
+            overlayImageView.setImageResource(resId);
+        } else {
+            overlayImageView.setImageBitmap(null);
+        }
 
         int rotation = getArguments().getInt(ROTATION_KEY);
         byte[] data = getArguments().getByteArray(BITMAP_KEY);
