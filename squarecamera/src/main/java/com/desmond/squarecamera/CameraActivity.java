@@ -11,6 +11,7 @@ public class CameraActivity extends AppCompatActivity {
 
     public static final String TAG = CameraActivity.class.getSimpleName();
     public static final String ARG_OVERLAY_DRAWABLE_NAME = CameraFragment.ARG_OVERLAY_DRAWABLE_NAME;
+    public static final String ARG_RETURN_DATA_IMMEDIATELY = CameraFragment.ARG_RETURN_DATA_IMMEDIATELY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,9 @@ public class CameraActivity extends AppCompatActivity {
             CameraFragment fragment = (CameraFragment) CameraFragment.newInstance();
             Bundle bundle = new Bundle();
             String overlayFromIntent = getIntent().getStringExtra(ARG_OVERLAY_DRAWABLE_NAME);
-            bundle.putString(CameraFragment.ARG_OVERLAY_DRAWABLE_NAME, overlayFromIntent);
+            bundle.putString(ARG_OVERLAY_DRAWABLE_NAME, overlayFromIntent);
+            boolean returnDataImmediatelyFromIntent = getIntent().getBooleanExtra(ARG_RETURN_DATA_IMMEDIATELY, false);
+            bundle.putBoolean(ARG_RETURN_DATA_IMMEDIATELY, returnDataImmediatelyFromIntent);
             fragment.setArguments(bundle);
 
             getSupportFragmentManager()

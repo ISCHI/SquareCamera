@@ -1,5 +1,8 @@
 package com.desmond.squarecamera;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +13,7 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.Display;
 import android.view.WindowManager;
@@ -18,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,6 +59,38 @@ public class ImageUtility {
         }
 
         return bitmap;
+    }
+
+    public static Uri insertImage(ContentResolver cr, byte[] bitmapData) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+
+        Uri mediaUri = null;
+        try {
+            mediaUri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            if (bitmapData != null) {
+                OutputStream imageOut = cr.openOutputStream(mediaUri);
+                try {
+                    imageOut.write(bitmapData);
+                } finally {
+                    imageOut.close();
+                }
+            } else {
+                cr.delete(mediaUri, null, null);
+                mediaUri = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (mediaUri != null) {
+                cr.delete(mediaUri, null, null);
+                mediaUri = null;
+            }
+        }
+
+        return mediaUri;
     }
 
     public static Uri savePicture(Context context, Bitmap bitmap) {

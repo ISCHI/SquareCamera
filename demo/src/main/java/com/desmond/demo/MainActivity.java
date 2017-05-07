@@ -5,9 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +21,8 @@ import android.widget.ImageView;
 
 import com.desmond.squarecamera.CameraActivity;
 import com.desmond.squarecamera.ImageUtility;
+
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +48,13 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CAMERA) {
             Uri photoUri = data.getData();
             // Get the bitmap in according to the width of the device
-            Bitmap bitmap = ImageUtility.decodeSampledBitmapFromPath(photoUri.getPath(), mSize.x, mSize.x);
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Bitmap bitmap = ImageUtility.decodeSampledBitmapFromPath(photoUri.getPath(), mSize.x, mSize.x);
             ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -90,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private void launch() {
         Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
         startCustomCameraIntent.putExtra(CameraActivity.ARG_OVERLAY_DRAWABLE_NAME, "heart1");
+        startCustomCameraIntent.putExtra(CameraActivity.ARG_RETURN_DATA_IMMEDIATELY, true);
         startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
     }
 

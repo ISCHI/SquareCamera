@@ -39,6 +39,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     public static final String CAMERA_FLASH_KEY = "flash_mode";
     public static final String IMAGE_INFO = "image_info";
     public static final String ARG_OVERLAY_DRAWABLE_NAME = "overlayDrawableName";
+    public static final String ARG_RETURN_DATA_IMMEDIATELY = "returnDataImmediately";
 
     private static final int PICTURE_SIZE_MAX_WIDTH = 1280;
     private static final int PREVIEW_SIZE_MAX_WIDTH = 640;
@@ -512,20 +513,26 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
      */
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
-        int rotation = getPhotoRotation();
+        boolean returnDataImmediately = getArguments().getBoolean(ARG_RETURN_DATA_IMMEDIATELY, false);
+        if (returnDataImmediately) {
+            Uri photoUri = ImageUtility.insertImage(getActivity().getContentResolver(), data);
+            ((CameraActivity) getActivity()).returnPhotoUri(photoUri);
+        } else {
+            int rotation = getPhotoRotation();
 //        Log.d(TAG, "normal orientation: " + orientation);
 //        Log.d(TAG, "Rotate Picture by: " + rotation);
-        String overlayDrawableName = getArguments().getString(ARG_OVERLAY_DRAWABLE_NAME, null);
-        getFragmentManager()
-                .beginTransaction()
-                .replace(
-                        R.id.fragment_container,
-                        EditSavePhotoFragment.newInstance(data, rotation, mImageParameters.createCopy(), overlayDrawableName),
-                        EditSavePhotoFragment.TAG)
-                .addToBackStack(null)
-                .commit();
+            String overlayDrawableName = getArguments().getString(ARG_OVERLAY_DRAWABLE_NAME, null);
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(
+                            R.id.fragment_container,
+                            EditSavePhotoFragment.newInstance(data, rotation, mImageParameters.createCopy(), overlayDrawableName),
+                            EditSavePhotoFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
 
-        setSafeToTakePhoto(true);
+            setSafeToTakePhoto(true);
+        }
     }
 
     private int getPhotoRotation() {
