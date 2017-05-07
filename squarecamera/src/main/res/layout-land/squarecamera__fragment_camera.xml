@@ -17,6 +17,13 @@
         android:layout_alignLeft="@id/camera_preview_view"
         android:background="@android:color/black"/>
 
+    <com.desmond.squarecamera.helper.CustomSquareImageView
+        android:id="@+id/camera_preview_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:alpha="0.5" />
+
     <View
         android:id="@+id/cover_bottom_view"
         android:layout_width="@dimen/squarecamera__cover_start_width"

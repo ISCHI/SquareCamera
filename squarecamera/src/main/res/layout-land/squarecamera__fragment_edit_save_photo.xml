@@ -18,6 +18,14 @@
         android:scaleType="centerCrop"
         android:layout_toRightOf="@id/topView"/>
 
+    <com.desmond.squarecamera.helper.CustomSquareImageView
+        android:id="@+id/camera_preview_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:layout_toRightOf="@id/topView"
+        android:alpha="0.5" />
+
     <ImageButton
         android:id="@+id/save_photo"
         android:layout_width="wrap_content"
